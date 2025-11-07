@@ -29,7 +29,12 @@
             </div>
             
             <div class="input-group">
-                <input type="text" id="taskInput" placeholder="Enter a new task..." maxlength="100">
+                <textarea 
+        id="taskInput" 
+        placeholder="Enter a new task... (Press Enter for new line, Ctrl+Enter to add task)" 
+        maxlength="500"
+        rows="2"
+    ></textarea>
                 <input type="date" id="dueDateInput">
                 <select id="categoryInput">
                     <option value="">No Category</option>
@@ -60,6 +65,7 @@
                 <button class="category-filter" data-category="personal">Personal</button>
                 <button class="category-filter" data-category="shopping">Shopping</button>
                 <button class="category-filter" data-category="health">Health</button>
+                <button class="category-filter" data-category="academic">Academic</button>
                 <button class="category-filter" data-category="other">Other</button>
             </div>
         </div>

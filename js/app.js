@@ -20,8 +20,21 @@ class TodoApp {
     document
       .getElementById("addTaskBtn")
       .addEventListener("click", () => this.addTask());
-    document.getElementById("taskInput").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") this.addTask();
+
+    // Enhanced keyboard handling for textarea
+    document.getElementById("taskInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.ctrlKey) {
+        // Add task when Ctrl+Enter is pressed
+        e.preventDefault();
+        this.addTask();
+      }
+      // For regular Enter, let it create new lines
+    });
+
+    // Auto-resize textarea
+    document.getElementById("taskInput").addEventListener("input", function () {
+      this.style.height = "auto";
+      this.style.height = this.scrollHeight + "px";
     });
 
     // Filter events
@@ -93,6 +106,10 @@ class TodoApp {
       input.value = "";
       dueDateInput.value = "";
       categoryInput.value = "";
+
+      // Reset textarea height
+      input.style.height = "auto";
+
       this.save();
       this.render();
       this.updateStats();
@@ -217,7 +234,7 @@ class TodoApp {
                       task.completed ? "checked" : ""
                     }>
                     <div class="task-content">
-                        <span class="task-text">${this.escapeHtml(
+                        <span class="task-text">${this.formatTaskText(
                           task.text
                         )}</span>
                         <div class="task-meta">
@@ -235,7 +252,11 @@ class TodoApp {
                             ${
                               task.category
                                 ? `
-                                <span class="task-category">${task.category}</span>
+                                <span class="task-category ${
+                                  task.category
+                                }">${this.formatCategoryName(
+                                    task.category
+                                  )}</span>
                             `
                                 : ""
                             }
@@ -260,6 +281,24 @@ class TodoApp {
       this.attachTaskEventListeners();
       this.initDragAndDrop();
     }
+  }
+
+  formatTaskText(text) {
+    // Replace newlines with line breaks and escape HTML
+    return this.escapeHtml(text).replace(/\n/g, "<br>");
+  }
+
+  formatCategoryName(category) {
+    // Format category names for display
+    const categoryNames = {
+      work: "Work",
+      personal: "Personal",
+      shopping: "Shopping",
+      health: "Health",
+      academic: "Academic",
+      other: "Other",
+    };
+    return categoryNames[category] || category;
   }
 
   attachTaskEventListeners() {
@@ -296,31 +335,142 @@ class TodoApp {
   }
 
   showEditModal(task) {
-    const newText = prompt("Edit task text:", task.text);
-    if (newText === null) return;
+    // Create a modal-like interface for better textarea editing
+    const modal = document.createElement("div");
+    modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        `;
 
-    let newDueDate = task.dueDate;
-    let newCategory = task.category;
+    const modalContent = document.createElement("div");
+    modalContent.style.cssText = `
+            background: var(--background-color);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        `;
 
-    // Ask for due date
-    const dueDateInput = prompt(
-      "Edit due date (YYYY-MM-DD) or leave empty:",
-      task.dueDate || ""
+    modalContent.innerHTML = `
+            <h3 style="margin-bottom: 20px; color: var(--text-color);">Edit Task</h3>
+            <textarea 
+                id="editTaskText" 
+                style="width: 100%; padding: 15px; border: 2px solid var(--border-color); border-radius: 10px; margin-bottom: 15px; background: var(--background-color); color: var(--text-color); min-height: 100px; resize: vertical;"
+                placeholder="Task description"
+            >${task.text}</textarea>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color);">Due Date</label>
+                    <input 
+                        type="date" 
+                        id="editDueDate" 
+                        value="${task.dueDate || ""}"
+                        style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 5px; background: var(--background-color); color: var(--text-color);"
+                    >
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color);">Category</label>
+                    <select 
+                        id="editCategory" 
+                        style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 5px; background: var(--background-color); color: var(--text-color);"
+                    >
+                        <option value="">No Category</option>
+                        <option value="work" ${
+                          task.category === "work" ? "selected" : ""
+                        }>Work</option>
+                        <option value="personal" ${
+                          task.category === "personal" ? "selected" : ""
+                        }>Personal</option>
+                        <option value="shopping" ${
+                          task.category === "shopping" ? "selected" : ""
+                        }>Shopping</option>
+                        <option value="health" ${
+                          task.category === "health" ? "selected" : ""
+                        }>Health</option>
+                        <option value="academic" ${
+                          task.category === "academic" ? "selected" : ""
+                        }>Academic</option>
+                        <option value="other" ${
+                          task.category === "other" ? "selected" : ""
+                        }>Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="cancelEdit" style="padding: 10px 20px; border: 2px solid var(--border-color); background: transparent; border-radius: 5px; cursor: pointer; color: var(--text-color);">Cancel</button>
+                <button id="saveEdit" style="padding: 10px 20px; border: none; background: var(--primary-color); color: white; border-radius: 5px; cursor: pointer;">Save Changes</button>
+            </div>
+        `;
+
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    // Focus on textarea and set cursor at end
+    const editTextarea = document.getElementById("editTaskText");
+    editTextarea.focus();
+    editTextarea.setSelectionRange(
+      editTextarea.value.length,
+      editTextarea.value.length
     );
-    if (dueDateInput !== null) {
-      newDueDate = dueDateInput || null;
-    }
 
-    // Ask for category
-    const categoryInput = prompt(
-      "Edit category (work, personal, shopping, health, other) or leave empty:",
-      task.category || ""
-    );
-    if (categoryInput !== null) {
-      newCategory = categoryInput || null;
-    }
+    // Auto-resize for edit textarea
+    editTextarea.style.height = "auto";
+    editTextarea.style.height = editTextarea.scrollHeight + "px";
 
-    this.editTask(task.id, newText, newDueDate, newCategory);
+    editTextarea.addEventListener("input", function () {
+      this.style.height = "auto";
+      this.style.height = this.scrollHeight + "px";
+    });
+
+    // Event listeners for modal buttons
+    document.getElementById("cancelEdit").addEventListener("click", () => {
+      document.body.removeChild(modal);
+    });
+
+    document.getElementById("saveEdit").addEventListener("click", () => {
+      const newText = editTextarea.value.trim();
+      const newDueDate = document.getElementById("editDueDate").value;
+      const newCategory = document.getElementById("editCategory").value;
+
+      if (newText) {
+        this.editTask(
+          task.id,
+          newText,
+          newDueDate || null,
+          newCategory || null
+        );
+        document.body.removeChild(modal);
+      } else {
+        alert("Task text cannot be empty!");
+      }
+    });
+
+    // Close modal when clicking outside
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        document.body.removeChild(modal);
+      }
+    });
+
+    // Close modal with Escape key
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        document.body.removeChild(modal);
+        document.removeEventListener("keydown", handleEscape);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
   }
 
   initDragAndDrop() {

@@ -8,6 +8,7 @@
     --completed-color: #6c757d;
     --overdue-color: #dc3545;
     --success-color: #28a745;
+    --academic-color: #4a6fdc;
 }
 
 [data-theme="dark"] {
@@ -20,6 +21,7 @@
     --completed-color: #8c8c8c;
     --overdue-color: #e74c3c;
     --success-color: #2ecc71;
+    --academic-color: #5b7ce0;
 }
 
 * {
@@ -317,6 +319,7 @@ body {
     font-size: 11px;
     font-weight: 600;
 }
+.task-category.academic { background: var(--academic-color); }
 
 .task-item.completed .task-text {
     text-decoration: line-through;
@@ -426,5 +429,47 @@ body {
     .task-meta {
         flex-direction: column;
         gap: 5px;
+    }
+}
+
+
+
+#taskInput {
+    padding: 15px 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 15px; /* Slightly less rounded for textarea */
+    font-size: 16px;
+    outline: none;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: inherit; /* Use the same font as the rest of the app */
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 60px; /* Minimum height */
+    line-height: 1.4; /* Better line spacing */
+}
+
+/* Keep the focus style */
+#taskInput:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Update input group for textarea */
+.input-group {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: start; /* Change from center to start for textarea */
+}
+
+/* Mobile responsiveness for textarea */
+@media (max-width: 768px) {
+    .input-group {
+        grid-template-columns: 1fr;
+    }
+    
+    #taskInput {
+        min-height: 80px; /* Taller on mobile for easier typing */
     }
 }
