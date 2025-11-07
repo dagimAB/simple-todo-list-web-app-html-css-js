@@ -10,7 +10,7 @@ A simple, lightweight Todo List built with HTML, CSS and JavaScript. Create, edi
 - Responsive, minimal UI
 
 ## Demo
-Open `index.html` in your browser (no build step required). For live reload use a static server or VS Code Live Server.
+Open `https://dagim-abraham-todo-list.netlify.app/` in your browser (no build step required). For live reload use a static server or VS Code Live Server.
 
 ## Getting started
 1. Clone or copy project files into your project folder:
