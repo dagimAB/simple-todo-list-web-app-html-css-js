@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Todo List</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/d logo.jpg">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Theme Toggle -->
+        <header class="app-header">
+            <div class="header-top">
+                <h1><i class="fas fa-check-circle"></i> My Todo List</h1>
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <p>Organize your tasks beautifully</p>
+        </header>
+
+        <!-- Search and Input Section -->
+        <div class="input-section">
+            <div class="search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search tasks..." maxlength="100">
+            </div>
+            
+            <div class="input-group">
+                <input type="text" id="taskInput" placeholder="Enter a new task..." maxlength="100">
+                <input type="date" id="dueDateInput">
+                <select id="categoryInput">
+                    <option value="">No Category</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="health">Health</option>
+                    <option value="other">Other</option>
+                </select>
+                <button id="addTaskBtn">
+                    <i class="fas fa-plus"></i> Add Task
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+                <button class="filter-btn" data-filter="overdue">Overdue</button>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="category-filters">
+                <button class="category-filter active" data-category="all">All Categories</button>
+                <button class="category-filter" data-category="work">Work</button>
+                <button class="category-filter" data-category="personal">Personal</button>
+                <button class="category-filter" data-category="shopping">Shopping</button>
+                <button class="category-filter" data-category="health">Health</button>
+                <button class="category-filter" data-category="other">Other</button>
+            </div>
+        </div>
+
+        <!-- Stats and Actions -->
+        <div class="stats">
+            <span id="taskCount">0 tasks</span>
+            <div class="action-buttons">
+                <button id="exportBtn" class="action-btn">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button id="importBtn" class="action-btn">
+                    <i class="fas fa-upload"></i> Import
+                </button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+                <button id="clearCompleted" class="clear-btn">Clear Completed</button>
+            </div>
+        </div>
+
+        <!-- Task List -->
+        <ul id="taskList" class="task-list"></ul>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-clipboard-list"></i>
+            <h3>No tasks yet</h3>
+            <p>Add a task above to get started!</p>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
